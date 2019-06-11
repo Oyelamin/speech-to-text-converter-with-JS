@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body{
+            background: black;
+            height: 100%;
+
+        }
+        .result{
+            height: 200px;
+            border:3px dotted silver;
+            margin:60px 0px;
+            text-align:left;
+            padding:10px;
+            color:black;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            cursor: text;
+        }
+        .btn{
+            font-size:60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="text-align:center;margin-top:30px;background:white;padding:20px;border-radius:3px;">
+        <h4>Speech to text converter using Javascript</h4>
+        <div class="result" id="result">
+
+        </div>
+        <button class="btn" onclick="startConverting()"><i class="fas fa-microphone"></i><br/> START</button>
+    </div>
+    <script>
+        var r = document.getElementById('result');
+        function startConverting(){
+            if('webkitSpeechRecognition' in window){               //--Check if the browser version supports speech recognition
+                var speechRecognizer = new webkitSpeechRecognition();
+                speechRecognizer.continuous = true; //This simplifies that the record should continue even if user stop talking
+                speechRecognizer.interimResults = true; //The interimResult is false by default....We also have file result
+                speechRecognizer.lang = 'en-US';    //Declear a language for it
+                speechRecognizer.start();   //Start record when invoked 
+                var finalTranscripts = '';
+                speechRecognizer.onresult = function(event){
+                    var interimTranscripts = '';
+                    for( var i = event.resultIndex; i < event.results.length; i++ ){
+                        var transcript = event.results[i][0].transcript;
+                        transcript.replace("\n","<br/>");
+                        if(event.results[i].isFinal){
+                            finalTranscripts += transcript;
+                        }else{
+                            interimTranscripts += transcript;
+                        }
+                    }
+                    r.innerHTML = finalTranscripts + '<span style="color:#999;">' + interimTranscripts + '</span>';
+                };
+                speechRecognizer.onerror = function(event){
+                    
+                };
+
+            }else{
+                r.innerHTML = 'Your Browser version doesn\'nt support speech recognition. If Google chrome Please upgrade!';
+            } 
+        }
+    </script>
+</body>
+</html>
